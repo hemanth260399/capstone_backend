@@ -5,8 +5,9 @@ import { transporter, mailobj } from "../mail.connection/verifiymail.js";
 import { jwttoken } from "../mail.connection/jwt_token.js";
 import jwt from "jsonwebtoken";
 import { v4 } from "uuid";
-export let registerserver = express.Router()
 import dotenv from "dotenv"
+import passport from "passport";
+export let registerserver = express.Router()
 dotenv.config()
 //Post call to register the staff data
 registerserver.post("/register", async (req, res) => {
@@ -91,7 +92,7 @@ registerserver.post("/login", async (req, res) => {
             res.status(404).json({ msg: "User not found" })
         }
     } catch (e) {
-        res.status(500).json({ msg: "Internal server error" })
+        res.status(500).json({ msg: "User not found" })
     }
 })
 //Post call to get email and send the forget password mail to change the password
@@ -120,6 +121,7 @@ registerserver.post("/changepassword", (req, res) => {
     let password = req.body
     jwt.verify(token, process.env.JWT_KEY, async (err, data) => {
         let user = await registermodel.findOne({ passcode_change: data.passcode })
+        console.log(data)
         if (user) {
             if (err) {
                 res.status(400).json({ msg: "Sorry Link is expired" })
@@ -142,4 +144,38 @@ registerserver.post("/changepassword", (req, res) => {
             res.status(400).json({ msg: "Sorry link already used" })
         }
     })
+})
+registerserver.get('/auth/google', passport.authenticate('google', { scope: ["profile", "email"] }));
+
+registerserver.get('/auth/google/callback',
+    passport.authenticate('google', {
+        successRedirect: `${process.env.FE_URL}/auth/loginSuccess`,
+        failureRedirect: '/auth/login/failure'
+    }));
+
+registerserver.get('/auth/github', passport.authenticate('github', { scope: ["profile"] }));
+
+registerserver.get('/auth/github/callback',
+    passport.authenticate('github', {
+        successRedirect: `${process.env.FE_URL}/auth/loginSuccess`,
+        failureRedirect: '/auth/login/failure'
+    }));
+registerserver.get("/auth/login/failure", (req, res) => {
+    res.status(401).json({
+        success: false,
+        msg: "failure"
+    })
+})
+registerserver.get("/auth/loginSuccess", (req, res) => {
+    if (req.user) {
+        let jwt_token = jwttoken({ email: req.user }, "1d")
+        res.status(200).json({
+            success: true,
+            msg: "success",
+            user: req.user,
+            token: jwt_token
+        })
+    } else {
+        res.status(401).json({ msg: "Something went wrong" })
+    }
 })

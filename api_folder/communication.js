@@ -6,11 +6,12 @@ import mongoose from "mongoose";
 import { customermodel } from "../connection/customerdatamodel.js";
 export let commserver = express.Router()
 import dotenv from "dotenv";
+import { registermodel } from "../connection/registermodel.js";
 dotenv.config()
 //Post method to add the new communictaion 
 commserver.post("/addcommunication", async (req, res) => {
     let data = req.body
-    let cusdata = await customermodel.findOne({ email: data.email })
+    let cusdata = await registermodel.findOne({ email: data.email })
     if (!cusdata) {
         return res.status(404).json({ msg: "Customer not found" })
     }

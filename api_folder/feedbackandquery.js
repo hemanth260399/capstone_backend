@@ -18,7 +18,7 @@ fdandqyserver.post("/addfeedback", async (req, res) => {
         ...data,
         id: v4(),
         Date: todaydate,
-        name: cusdata[0].name,
+        name: cusdata[0].name || "",
         number: cusdata[0].number,
     })
     if (data.selecttype === "query") {

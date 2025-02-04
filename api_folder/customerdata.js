@@ -67,10 +67,9 @@ customerserver.delete("/customerdata", async (req, res) => {
     }
 })
 //patch call to update the customer data in the db
-customerserver.patch("/newcustomer", async (req, res) => {
+customerserver.put("/newcustomeredit", async (req, res) => {
     let { id } = req.query
     let data = req.body
-    console.log(data)
     data = { ...data, created_date: new Date().toISOString().slice(0, 10) }
     let startdate = Date.parse(data.date)
     let enddate = Date.parse(data.created_date)
