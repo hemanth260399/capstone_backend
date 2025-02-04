@@ -7,6 +7,7 @@ import { customermodel } from "../connection/customerdatamodel.js";
 export let commserver = express.Router()
 import dotenv from "dotenv";
 dotenv.config()
+//Post method to add the new communictaion 
 commserver.post("/addcommunication", async (req, res) => {
     let data = req.body
     let cusdata = await customermodel.findOne({ email: data.email })
@@ -71,6 +72,7 @@ commserver.post("/addcommunication", async (req, res) => {
         }
     }
 })
+//Get method to get the communictaion details of the customer
 commserver.get("/allcommunication", async (req, res) => {
     let data = await commodel.find({}).exec()
     if (data) {
@@ -79,6 +81,7 @@ commserver.get("/allcommunication", async (req, res) => {
         res.status(404).json({ msg: "No data found" })
     }
 })
+//In this Delete method commuincation data will delete
 commserver.delete("/allcommunication", async (req, res) => {
     let { id } = req.query
     try {
