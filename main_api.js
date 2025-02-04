@@ -18,10 +18,15 @@ server.use(cors({
     credentials: true,
     methods: 'GET, POST,PUT,DELETE'
 }))
+server.set("trust proxy", 1)
 server.use(session({
-    secret: 'keyboard cat',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
+    cookie: {
+        secure: "auto",
+        sameSite: "none",
+    }
 }))
 server.use(passport.initialize());
 server.use(passport.session());
